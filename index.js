@@ -25,6 +25,17 @@ function installCarton(dir) {
     })
 }
 
+function installStraw(dir) {
+    return new Promise((resolve, reject) => {
+        let npm = spawn('npm', ['i'], { stdio: 'inherit', cwd: dir }, { stdio: 'inherit'});
+        npm.on('close', code => {
+            if (code === 0) {
+                resolve();
+            }
+        });
+    })
+}
+
 function removeGit(dir) {
     return new Promise((resolve, reject) => {
         let remove = spawn('rm', ['-rf', `.git`], { cwd: dir });
@@ -48,14 +59,50 @@ function addFlavour(dir) {
     });
 }
 
+function addStraw(dir) {
+    return new Promise((resolve, reject) => {
+        let straw = spawn('git', ['clone', 'https://github.com/thinkingjuice/straw.git', 'straw'], { stdio: 'inherit'});
+        straw.on('close', code => {
+            if (code === 0) {
+                resolve();
+            }
+        })
+    })
+}
+
+function moveContents(target, dest) {
+    return new Promise((resolve, reject) => {
+        let pwd = spawn('pwd', { stdio: 'inherit'});
+        let move = spawn('cp', ['-R', `${target}/`, `${dest}/`], { stdio: 'inherit'});
+        move.on('close', code => {
+            if (code === 0) {
+                resolve();
+            }
+        })
+    })
+}
+
+function removeDir(dir) {
+    return new Promise((resolve, reject) => {
+        let remove = spawn('rm', ['-rf', dir], { stdio: 'inherit' });
+        remove.on('close', code => {
+            if (code === 0) {
+                resolve();
+            }
+        })
+    })
+}
+
 program
     .command('new <dir>')
     .action(async (dir, cmd) => {
         await addCarton(dir);
-        await installCarton(dir);
         await removeGit(dir);
+        await addStraw(dir);
         await addFlavour(dir);
-        console.log('now add flavour');
+        await moveContents('straw', dir); //moves everything from start into target dir root
+        await removeDir('straw');
+        await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
     });
 
 program.parse(process.argv);
