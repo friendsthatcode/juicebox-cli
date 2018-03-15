@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 const { spawn } = require('child_process');
 const program = require('commander');
+const fs = require('fs');
+const { promisify } = require('util');
+const hogan = require('hogan.js');
 
 function addCarton(dir) {
     return new Promise((resolve,reject) => {
@@ -93,6 +96,20 @@ function removeDir(dir) {
     })
 }
 
+const readFile = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile);
+
+/**
+ * Used to parse a file, replace vars using hogan and then save it out again
+ * @param {string} filename 
+ */
+async function parseFile(filename, data) {
+    let file = await readFile(filename, 'utf8');
+    let template = hogan.compile(file);
+    let rendered = template.render(data);
+    await writeFile(filename, rendered);
+}
+
 program
     .command('new <dir>')
     .action(async (dir, cmd) => {
@@ -102,6 +119,7 @@ program
         await addFlavour(dir);
         await moveContents('straw', dir); //moves everything from start into target dir root
         await removeDir('straw');
+        await parseFile(`${dir}/package.json`, { themeName: 'anything-i-like'});
         await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
     });
 

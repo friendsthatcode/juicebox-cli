@@ -10,5 +10,8 @@
   "license": "MIT",
   "devDependencies": {
     "commander": "^2.14.1"
+  },
+  "dependencies": {
+    "hogan": "^1.0.2"
   }
 }
