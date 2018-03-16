@@ -138,16 +138,24 @@ function removeDir(dir) {
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
+const removeFile = promisify(fs.unlink);
 
 /**
  * Used to parse a file, replace vars using hogan and then save it out again
+ * Accepts the data you want to replace on and additionally a new filename
+ * will delete the old file if you give it a new name
  * @param {string} filename 
+ * @param {object} data
+ * @param {string} newName
  */
-async function parseFile(filename, data) {
+async function parseFile(filename, data, newName = filename) {
     let file = await readFile(filename, 'utf8');
     let template = hogan.compile(file);
     let rendered = template.render(data);
-    await writeFile(filename, rendered);
+    await writeFile(newName, rendered);
+    if (newName !== filename) {
+        removeFile(filename);
+    }
 }
 
 program
@@ -163,6 +171,7 @@ program
         await parseFile(`${dir}/package.json`, response);
         await parseFile(`${dir}/webpack.config.js`, response);
         await parseFile(`${dir}/gulpfile.js`, response);
+        await parseFile(`${dir}/.env.example`, response, `${dir}/.env`);
         //await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
     });
 
