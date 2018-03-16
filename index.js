@@ -4,6 +4,46 @@ const program = require('commander');
 const fs = require('fs');
 const { promisify } = require('util');
 const hogan = require('hogan.js');
+const prompts = require('prompts');
+
+function newProjectQuestions(dir) {
+    return [{
+            type: 'text',
+            name: 'dbName',
+            message: 'Please enter DB name',
+            initial: dir
+        },
+        {
+            type: 'text',
+            name: 'dbUser',
+            message: 'Please enter the DB username',
+            initial: dir
+        },
+        {
+            type: 'password',
+            name: 'dbPass',
+            message: 'Please enter the DB pass'
+        },
+        {
+            type: 'text',
+            name: 'dbHost',
+            message: 'Please enter DB host',
+            initial: 'localhost'
+        },
+        {
+            type: 'text',
+            name: 'siteUrl',
+            message: 'Please enter a site url (used in .env and browsersync proxy)',
+            initial: `${dir}.local`
+        },
+        {
+            type: 'text',
+            name: 'themeName',
+            message: 'Please enter a wordpress theme name',
+            initial: dir
+        }
+    ];
+}
 
 function addCarton(dir) {
     return new Promise((resolve,reject) => {
@@ -113,14 +153,17 @@ async function parseFile(filename, data) {
 program
     .command('new <dir>')
     .action(async (dir, cmd) => {
+        let response = await prompts(newProjectQuestions(dir));
         await addCarton(dir);
         await removeGit(dir);
         await addStraw(dir);
         await addFlavour(dir);
         await moveContents('straw', dir); //moves everything from start into target dir root
         await removeDir('straw');
-        await parseFile(`${dir}/package.json`, { themeName: 'anything-i-like'});
-        await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
+        await parseFile(`${dir}/package.json`, response);
+        await parseFile(`${dir}/webpack.config.js`, response);
+        await parseFile(`${dir}/gulpfile.js`, response);
+        //await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
     });
 
 program.parse(process.argv);

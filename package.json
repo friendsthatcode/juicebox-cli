@@ -8,10 +8,10 @@
   },
   "author": "Paul Bird",
   "license": "MIT",
-  "devDependencies": {
-    "commander": "^2.14.1"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "hogan": "^1.0.2"
+    "commander": "^2.15.0",
+    "hogan": "^1.0.2",
+    "prompts": "^0.1.8"
   }
 }
