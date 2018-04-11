@@ -103,6 +103,21 @@ function removeGit(dir) {
     });
 }
 
+function removeAllGit(dir) {
+    return new Promise((resolve, reject) => {
+        let remove = spawn('sh', [`find . | grep .git | xargs rm -rf`], { cwd: dir});
+        remove.on('close', code => { remove.on('close', code => {
+            if (code === 0) {
+                resolve();
+            }
+        })
+            if (code === 0) {
+                resolve();
+            }
+        })
+    })
+}
+
 function addFlavour(dir, themeName) {
     console.log('adding flavour');
     return new Promise((resolve,reject) => {
@@ -211,6 +226,7 @@ program
         await parseFile(`${dir}/gulpfile.js`, response); // change themename in gulpfile
         await parseFile(`${dir}/.env.example`, response, `${dir}/.env`); //add in db details and more into env
         await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
+        await removeAllGit(dir);
     });
 
 program.parse(process.argv);
