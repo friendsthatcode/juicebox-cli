@@ -8,6 +8,7 @@ const hogan = require('hogan.js');
 const prompts = require('prompts');
 const rimraf = require('rimraf');
 const Configstore = require('configstore');
+const generator = require('generate-password');
 
 const config = new Configstore('juicebox', {
     core: 'https://github.com/thinkingjuice/carton.git',
@@ -199,10 +200,27 @@ async function createIfNotExists(path) {
     })
 }
 
+//pass in the response so we can easily use it in parseFile function
+async function generateSalts(response) {
+    let salts ={};
+    let keys = ['auth_key','secure_auth_key','logged_in_key','nonce_key','auth_salt','secure_auth_salt','logged_in_salt','nonce_salt'];
+    keys.forEach(key => {
+        let password = generator.generate({
+            length: 64,
+            numbers: true,
+            symbols: true,
+            uppercase: true
+        });
+        salts[key] = password;
+    });
+    return salts;
+}
+
 program
     .command('new <dir>')
     .action(async (dir, cmd) => {
         let response = await prompts(newProjectQuestions(dir));
+        response.salts = await generateSalts(response);
         await addCarton(dir); //add carton core
         await addStraw(dir); // add webpack/gulp setup
         await moveContents('straw', dir); //moves everything from start into target dir root
