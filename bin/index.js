@@ -57,7 +57,7 @@ function newProjectQuestions(dir) {
 
 function addCarton(dir) {
     return new Promise((resolve,reject) => {
-        let carton = spawn('git', ['clone', config.core, dir], { stdio: 'inherit' });
+        let carton = spawn('git', ['clone', config.get('core'), dir], { stdio: 'inherit' });
         carton.on('close', (code) => {
             if (code === 0) {
                 console.log('Carton downloaded');
@@ -69,7 +69,7 @@ function addCarton(dir) {
 
 function addCartonTheme(dir, themeName) {
     return new Promise((resolve, reject) => {
-        let carton = spawn('git', ['clone', config.theme, themeName], { stdio: 'inherit', cwd: dir });
+        let carton = spawn('git', ['clone', config.get('theme'), themeName], { stdio: 'inherit', cwd: dir });
         carton.on('close', (code) => {
             if (code === 0) {
                 console.log('Carton Theme downloaded');
@@ -114,7 +114,7 @@ function removeAllGit(dir) {
 function addFlavour(dir, themeName) {
     console.log('adding flavour');
     return new Promise((resolve,reject) => {
-        let flavour = spawn('git', ['clone', config.scss, `wp-content/themes/${themeName}/src/scss`], { stdio: 'inherit', cwd: dir });
+        let flavour = spawn('git', ['clone', config.get('scss'), `wp-content/themes/${themeName}/src/scss`], { stdio: 'inherit', cwd: dir });
         flavour.on('close', code => {
             if (code === 0) {
                 resolve();
@@ -125,7 +125,7 @@ function addFlavour(dir, themeName) {
 
 function addStraw(dir) {
     return new Promise((resolve, reject) => {
-        let straw = spawn('git', ['clone', config.gulp, 'straw'], { stdio: 'inherit'});
+        let straw = spawn('git', ['clone', config.get('gulp'), 'straw'], { stdio: 'inherit'});
         straw.on('close', code => {
             if (code === 0) {
                 resolve();
@@ -219,6 +219,18 @@ program
         await parseFile(`${dir}/.env.example`, response, `${dir}/.env`); //add in db details and more into env
         await removeAllGit(dir);
         await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
+    });
+
+program
+    .command('config <key> <val>')
+    .action(async (key, val, cmd) => {
+        let all = config.all;
+        if (typeof all[key] !== 'undefined') {
+            config.set(key, val);
+        } else {
+            console.log(`Sorry that isn't an option`);
+        }
+        console.log(`You can edit the file by hand here --> ${config.path}`);
     });
 
 program.parse(process.argv);
