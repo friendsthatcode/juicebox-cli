@@ -7,6 +7,14 @@ const { promisify } = require('util');
 const hogan = require('hogan.js');
 const prompts = require('prompts');
 const rimraf = require('rimraf');
+const Configstore = require('configstore');
+
+const config = new Configstore('juicebox', {
+    core: 'https://github.com/thinkingjuice/carton.git',
+    theme: 'https://github.com/thinkingjuice/carton-theme.git',
+    gulp: 'https://github.com/thinkingjuice/straw.git',
+    scss: 'https://github.com/thinkingjuice/flavourcss.git'
+});
 
 function newProjectQuestions(dir) {
     return [{
@@ -49,7 +57,7 @@ function newProjectQuestions(dir) {
 
 function addCarton(dir) {
     return new Promise((resolve,reject) => {
-        let carton = spawn('git', ['clone', 'https://github.com/thinkingjuice/carton.git', dir], { stdio: 'inherit' });
+        let carton = spawn('git', ['clone', config.core, dir], { stdio: 'inherit' });
         carton.on('close', (code) => {
             if (code === 0) {
                 console.log('Carton downloaded');
@@ -61,7 +69,7 @@ function addCarton(dir) {
 
 function addCartonTheme(dir, themeName) {
     return new Promise((resolve, reject) => {
-        let carton = spawn('git', ['clone', 'https://github.com/thinkingjuice/carton-theme.git', themeName], { stdio: 'inherit', cwd: dir });
+        let carton = spawn('git', ['clone', config.theme, themeName], { stdio: 'inherit', cwd: dir });
         carton.on('close', (code) => {
             if (code === 0) {
                 console.log('Carton Theme downloaded');
@@ -106,7 +114,7 @@ function removeAllGit(dir) {
 function addFlavour(dir, themeName) {
     console.log('adding flavour');
     return new Promise((resolve,reject) => {
-        let flavour = spawn('git', ['clone', 'https://github.com/thinkingjuice/flavourcss.git', `wp-content/themes/${themeName}/src/scss`], { stdio: 'inherit', cwd: dir });
+        let flavour = spawn('git', ['clone', config.scss, `wp-content/themes/${themeName}/src/scss`], { stdio: 'inherit', cwd: dir });
         flavour.on('close', code => {
             if (code === 0) {
                 resolve();
@@ -117,7 +125,7 @@ function addFlavour(dir, themeName) {
 
 function addStraw(dir) {
     return new Promise((resolve, reject) => {
-        let straw = spawn('git', ['clone', 'https://github.com/thinkingjuice/straw.git', 'straw'], { stdio: 'inherit'});
+        let straw = spawn('git', ['clone', config.gulp, 'straw'], { stdio: 'inherit'});
         straw.on('close', code => {
             if (code === 0) {
                 resolve();
