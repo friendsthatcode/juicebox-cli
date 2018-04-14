@@ -6,6 +6,7 @@ const mkdirp = require('mkdirp');
 const { promisify } = require('util');
 const hogan = require('hogan.js');
 const prompts = require('prompts');
+const rimraf = require('rimraf');
 
 function newProjectQuestions(dir) {
     return [{
@@ -105,13 +106,8 @@ function removeGit(dir) {
 
 function removeAllGit(dir) {
     return new Promise((resolve, reject) => {
-        let remove = spawn('sh', [`find . | grep .git | xargs rm -rf`], { cwd: dir});
-        remove.on('close', code => { remove.on('close', code => {
-            if (code === 0) {
-                resolve();
-            }
-        })
-            if (code === 0) {
+        rimraf(`${dir}/**/.git`, status => {
+            if (status === null) {
                 resolve();
             }
         })
@@ -212,7 +208,6 @@ program
     .action(async (dir, cmd) => {
         let response = await prompts(newProjectQuestions(dir));
         await addCarton(dir); //add carton core
-        await removeGit(dir); //remove git from core
         await addStraw(dir); // add webpack/gulp setup
         await moveContents('straw', dir); //moves everything from start into target dir root
         await removeDir('straw'); //remove temp folder
@@ -225,8 +220,8 @@ program
         await parseFile(`${dir}/webpack.config.js`, response); //Change themename in webpack config
         await parseFile(`${dir}/gulpfile.js`, response); // change themename in gulpfile
         await parseFile(`${dir}/.env.example`, response, `${dir}/.env`); //add in db details and more into env
-        await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
         await removeAllGit(dir);
+        await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
     });
 
 program.parse(process.argv);
