@@ -1,5 +1,5 @@
 {
-  "name": "@thinkingjuice/juicebox-cli",
+  "name": "juicebox-cli",
   "version": "0.0.1",
   "description": "cli for setting up new wordpress themes",
   "main": "index.js",
