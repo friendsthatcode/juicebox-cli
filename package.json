@@ -15,5 +15,8 @@
     "mkdirp": "^0.5.1",
     "prompts": "^0.1.8",
     "rimraf": "^2.6.2"
+  },
+  "bin": {
+    "juicebox": "bin/index.js"
   }
 }
