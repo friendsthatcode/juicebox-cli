@@ -216,8 +216,11 @@ async function generateSalts(response) {
     return salts;
 }
 
+program.version('0.0.1');
+
 program
     .command('new <dir>')
+    .description('Used to generate a new wordpress site pulled from the various repositries')
     .action(async (dir, cmd) => {
         let response = await prompts(newProjectQuestions(dir));
         response.salts = await generateSalts(response);
@@ -240,6 +243,7 @@ program
 
 program
     .command('config <key> <val>')
+    .description(`Use this to change any known config keys, or edit directly here --> ${config.path}`)
     .action(async (key, val, cmd) => {
         let all = config.all;
         if (typeof all[key] !== 'undefined') {
