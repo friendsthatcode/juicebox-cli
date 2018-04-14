@@ -148,9 +148,8 @@ async function moveContents(target, dest) {
 
 function removeDir(dir) {
     return new Promise((resolve, reject) => {
-        let remove = spawn('rm', ['-rf', dir], { stdio: 'inherit' });
-        remove.on('close', code => {
-            if (code === 0) {
+        rimraf(dir, status => {
+            if (status === null) {
                 resolve();
             }
         })
