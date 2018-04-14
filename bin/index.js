@@ -93,17 +93,6 @@ function installStraw(dir) {
     })
 }
 
-function removeGit(dir) {
-    return new Promise((resolve, reject) => {
-        let remove = spawn('rm', ['-rf', `.git`], { cwd: dir });
-        remove.on('close', code => {
-            if (code === 0) {
-                resolve();
-            }
-        })
-    });
-}
-
 function removeAllGit(dir) {
     return new Promise((resolve, reject) => {
         rimraf(`${dir}/**/.git`, status => {
