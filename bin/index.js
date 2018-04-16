@@ -237,8 +237,8 @@ program
         await parseFile(`${dir}/webpack.config.js`, response); //Change themename in webpack config
         await parseFile(`${dir}/gulpfile.js`, response); // change themename in gulpfile
         await parseFile(`${dir}/.env.example`, response, `${dir}/.env`); //add in db details and more into env
-        await removeAllGit(dir);
         await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
+        await removeAllGit(dir); // do this last, to ensure .git is also removed from plugin directories
     });
 
 program
