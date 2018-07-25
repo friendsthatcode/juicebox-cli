@@ -11,10 +11,10 @@ const Configstore = require('configstore');
 const generator = require('generate-password');
 
 const config = new Configstore('juicebox', {
-    core: 'https://github.com/thinkingjuice/carton.git',
-    theme: 'https://github.com/thinkingjuice/carton-theme.git',
-    gulp: 'https://github.com/thinkingjuice/straw.git',
-    scss: 'https://github.com/thinkingjuice/flavourcss.git'
+    core: 'https://github.com/friendsthatcode/carton.git',
+    theme: 'https://github.com/friendsthatcode/carton-theme.git',
+    gulp: 'https://github.com/friendsthatcode/straw.git',
+    scss: 'https://github.com/friendsthatcode/flavourcss.git'
 });
 
 function newProjectQuestions(dir) {

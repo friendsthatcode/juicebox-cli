@@ -1,12 +1,12 @@
 {
-  "name": "@thinkingjuice/juicebox-cli",
+  "name": "@friendsthatcode/juicebox-cli",
   "version": "0.0.1",
   "description": "cli for setting up new wordpress themes",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Paul Bird",
+  "author": "FTC",
   "license": "MIT",
   "devDependencies": {},
   "dependencies": {
