@@ -1,6 +1,6 @@
 {
   "name": "@friendsthatcode/juicebox-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "cli for setting up new wordpress sites, with a bucket load of depedencies out the box and good to build with in minutes!",
   "main": "index.js",
   "scripts": {
