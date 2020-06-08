@@ -157,6 +157,17 @@ function removeDir(dir) {
     })
 }
 
+function cleanupHomeDirectory(dir) {
+    return new Promise((resolve, reject) =>.
+        let move = spawn('cp', ['-r ', dir, '.'], { stdio: 'inherit'});
+        move.on('close', code => {
+            if (code === 0) {
+                resolve();
+            }
+        })
+    })
+}
+
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const removeFile = promisify(fs.unlink);
@@ -239,6 +250,7 @@ program
         await parseFile(`${dir}/.env.example`, response, `${dir}/.env`); //add in db details and more into env
         await Promise.all([installCarton(dir),installStraw(dir)]); // install composer and npm at the same time
         await removeAllGit(dir); // do this last, to ensure .git is also removed from plugin directories
+        await cleanupHomeDirectory(dir); // really do this last, to get the folder structure in place for your new site
     });
 
 program
